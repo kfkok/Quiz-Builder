@@ -10,6 +10,9 @@ public class StatusBar : Singleton<StatusBar>
 
     public static void Print(string message)
     {
-        Instance.statusMessage.text = message;
+        if (Instance)
+        {
+            Instance.statusMessage.text = message;
+        }
     }
 }

@@ -1,4 +1,5 @@
 using QuizBuilder.Models;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,10 @@ namespace QuizBuilder
         // Quiz submitted event
         public delegate void OnQuizSubmittedEventHandler(Quiz quiz);
         public event OnQuizSubmittedEventHandler OnQuizSubmitted;
+
+        // Quiz closed without changes event to the questions
+        public delegate void OnQuizClosedEventHandler(Quiz quiz);
+        public event OnQuizClosedEventHandler OnQuizClosed;
 
         #endregion
 
@@ -48,6 +53,7 @@ namespace QuizBuilder
             if (quiz.questions.FirstOrDefault(q => q == question) == null)
             {
                 quiz.AddQuestion(question);
+
                 StatusBar.Print("Added question");
             }
 
@@ -77,6 +83,7 @@ namespace QuizBuilder
         {
             this.quiz = quiz;
 
+            // Backup the original questions first, just in case the user closes the form without saving
             originalQuizQuestions = quiz.questions.ToList();
 
             ShowQuizTitleForm();
@@ -118,29 +125,31 @@ namespace QuizBuilder
 
             for (int i = 0; i < quiz.questions.Count; i++)
             {
-                QuestionView questionView = Instantiate(questionViewPrefab);
-                questionView.LoadQuestion(i + 1, quiz.questions[i]);
-                questionView.transform.SetParent(questionViewContainer);
-                questionView.transform.localScale = Vector3.one;
-                questionView.OnClick += (questionView) => 
-                {
-                    ShowQuestionForm(questionView.question);
-                };
-                questionView.OnClickDelete += (questionView) =>
-                {
-                    Question question = quiz.questions.SingleOrDefault(q => q == questionView.question);
-
-                    if (question != null)
-                    {
-                        quiz.RemoveQuestion(question);
-                        Render();
-                    }
-
-                    StatusBar.Print("Deleted question");
-                };
+                InstantiateQuestionView(i + 1, quiz.questions[i]);
             }
 
             StartCoroutine(RefreshQuestionsLayout());
+        }
+
+        void InstantiateQuestionView(int index, Question question)
+        {
+            QuestionView questionView = Instantiate(questionViewPrefab);
+            questionView.LoadQuestion(index, question);
+            questionView.transform.SetParent(questionViewContainer);
+            questionView.transform.localScale = Vector3.one;
+
+            questionView.OnClick += (questionView) =>
+            {
+                ShowQuestionForm(questionView.question);
+            };
+
+            questionView.OnClickDelete += (questionView) =>
+            {
+                quiz.RemoveQuestion(questionView.question);
+                Render();
+
+                StatusBar.Print("Deleted question");
+            };
         }
 
         IEnumerator RefreshQuestionsLayout()
@@ -185,6 +194,8 @@ namespace QuizBuilder
         public void Close()
         {
             quiz.questions = originalQuizQuestions;
+
+            OnQuizClosed.Invoke(quiz);
 
             this.gameObject.SetActive(false);
         }

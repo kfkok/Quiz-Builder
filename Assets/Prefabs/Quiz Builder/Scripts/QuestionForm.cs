@@ -27,18 +27,22 @@ namespace QuizBuilder
         public Transform optionFormsContainer;
         public OptionForm optionFormPrefab;
 
-        public List<OptionForm> optionForms = new List<OptionForm>();
-
         public void Load(Question question)
         {
             // Load the question
             this.question = question;
-            questionTextField.text = question.text;
 
-            LoadOptions();
+            Render();
         }
 
-        void LoadOptions()
+        void Render()
+        {
+            questionTextField.text = question.text;
+
+            RenderOptions();
+        }
+
+        void RenderOptions()
         {
             foreach (Transform child in optionFormsContainer.transform)
             {
@@ -50,11 +54,7 @@ namespace QuizBuilder
             {
                 for (int i = 0; i < question.options.Count; i++)
                 {
-                    OptionForm optionForm = Instantiate(optionFormPrefab);
-                    optionForm.Load(i + 1, question.options[i]);
-                    optionForm.transform.SetParent(optionFormsContainer);
-                    optionForm.transform.localScale = Vector3.one;
-                    optionForms.Add(optionForm);
+                    InstantiateOptionForm(i + 1, question.options[i]);
                 }
             } 
 
@@ -67,21 +67,21 @@ namespace QuizBuilder
                     Option option = new Option();
 
                     // Set the first option as is correct
-                    if (i == 0)
-                    {
-                        option.isCorrect = true;
-                    }
+                    option.isCorrect = (i == 0);
 
                     question.AddOption(option);
-                   
-                    // Instantiate the option form and load the created options 
-                    OptionForm optionForm = Instantiate(optionFormPrefab);
-                    optionForm.Load(i + 1, option);
-                    optionForm.transform.SetParent(optionFormsContainer);
-                    optionForm.transform.localScale = Vector3.one;
-                    optionForms.Add(optionForm);
+
+                    InstantiateOptionForm(i + 1, option);
                 }
             }
+        }
+
+        void InstantiateOptionForm(int index, Option option)
+        {
+            OptionForm optionForm = Instantiate(optionFormPrefab);
+            optionForm.Load(index, option);
+            optionForm.transform.SetParent(optionFormsContainer);
+            optionForm.transform.localScale = Vector3.one;
         }
 
         public void Submit()
@@ -104,7 +104,7 @@ namespace QuizBuilder
                 int invalidOptionFormCount = 0;
                 int correctOptionCount = 0;
 
-                foreach (OptionForm optionForm in optionForms)
+                foreach (OptionForm optionForm in optionFormsContainer.GetComponentsInChildren<OptionForm>())
                 {
                     if (!optionForm.IsValid)
                     {

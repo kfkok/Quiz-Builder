@@ -32,6 +32,7 @@ namespace QuizBuilder
             quizzes = new List<Quiz>();
 
             quizForm.OnQuizSubmitted += HandleOnQuizSubmitted;
+            quizForm.OnQuizClosed += HandleOnQuizClosed;
 
             HideQuizForm();
 
@@ -114,30 +115,27 @@ namespace QuizBuilder
             // Populate the quiz views container with quiz views
             for (int i = 0; i < quizzes.Count; i++)
             {
-                Quiz quiz = quizzes[i];
-
-                QuizView quizView = Instantiate(quizViewPrefab);
-                quizView.Load(i + 1, quiz);
-
-                // When user click the quiz, load the quiz details form
-                quizView.OnClick += (QuizView view) => {
-                    ShowQuizForm(view.quiz);
-                };
-
-                // When user click the quiz delete button, remove the quiz from the list 
-                quizView.OnClickDelete += (QuizView) => {
-                    Quiz q = quizzes.SingleOrDefault(q => q == quiz);
-
-                    if (q != null)
-                    {
-                        quizzes.Remove(quiz);
-                        Render();
-                    }
-                };
-
-                quizView.transform.SetParent(quizViewsContainer);
-                quizView.transform.localScale = Vector3.one;
+                InstantiateQuizView(i + 1, quizzes[i]);
             }
+        }
+
+        void InstantiateQuizView(int index, Quiz quiz)
+        {
+            QuizView quizView = Instantiate(quizViewPrefab);
+            quizView.Load(index, quiz);
+            quizView.transform.SetParent(quizViewsContainer);
+            quizView.transform.localScale = Vector3.one;
+
+            // When user click the quiz, load the quiz details form
+            quizView.OnClick += (QuizView view) => {
+                ShowQuizForm(view.quiz);
+            };
+
+            // When user click the quiz delete button, remove the quiz from the list 
+            quizView.OnClickDelete += (QuizView view) => {
+                quizzes.Remove(view.quiz);
+                Render();
+            };
         }
 
         public void HandleOnQuizSubmitted(Quiz quiz)
@@ -150,6 +148,11 @@ namespace QuizBuilder
             }
 
             ShowQuizMenu();
+        }
+
+        public void HandleOnQuizClosed(Quiz quiz)
+        {
+            Render();
         }
     }
 }
