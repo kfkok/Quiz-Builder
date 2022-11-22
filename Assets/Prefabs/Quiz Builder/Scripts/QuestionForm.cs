@@ -89,7 +89,10 @@ namespace QuizBuilder
             if (IsValid)
             {
                 StatusBar.Print("Submitted question");
+
                 OnSubmitted?.Invoke(question);
+
+                gameObject.SetActive(false);
             }
             else
             {

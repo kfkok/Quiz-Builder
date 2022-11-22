@@ -154,6 +154,8 @@ namespace QuizBuilder
             OnQuizPreviewComplete?.Invoke(this);
 
             StatusBar.Print("Preview completed");
+
+            gameObject.SetActive(false);
         }
     }
 }

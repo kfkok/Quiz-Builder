@@ -41,7 +41,6 @@ namespace QuizBuilder
         {
             questionForm.OnSubmitted += HandleQuestionOnSubmitted;
             quizTitleForm.OnSubmitted += HandleOnQuizTitleSubmitted;
-            quizPreviewer.OnQuizPreviewComplete += HandleOnQuizPreviewComplete;
 
             ShowQuizTitleForm();
             CloseQuizPreviewer();
@@ -56,8 +55,6 @@ namespace QuizBuilder
 
                 StatusBar.Print("Added question");
             }
-
-            CloseQuestionForm();
             
             Render();
         }
@@ -72,11 +69,6 @@ namespace QuizBuilder
             CloseQuizTitleForm();
 
             Render();
-        }
-
-        private void HandleOnQuizPreviewComplete(QuizPreviewer quizPreviewer)
-        {
-            CloseQuizPreviewer();
         }
 
         public void LoadQuiz(Quiz quiz)
@@ -189,6 +181,9 @@ namespace QuizBuilder
         public void SubmitQuiz()
         {
             OnQuizSubmitted?.Invoke(quiz);
+
+            // Close it self
+            gameObject.SetActive(false);
         }
 
         public void Close()
@@ -197,7 +192,7 @@ namespace QuizBuilder
 
             OnQuizClosed.Invoke(quiz);
 
-            this.gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
 
         public void PreviewQuiz()

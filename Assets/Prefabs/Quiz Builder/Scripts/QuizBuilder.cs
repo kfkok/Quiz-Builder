@@ -39,13 +39,6 @@ namespace QuizBuilder
             Render();
         }
 
-        public void ShowQuizMenu()
-        {
-            HideQuizForm();
-
-            Render();
-        }
-
         public void CreateQuiz()
         {
             ShowQuizForm(new Quiz());
@@ -147,7 +140,7 @@ namespace QuizBuilder
                 quizzes.Add(quiz);
             }
 
-            ShowQuizMenu();
+            Render();
         }
 
         public void HandleOnQuizClosed(Quiz quiz)
