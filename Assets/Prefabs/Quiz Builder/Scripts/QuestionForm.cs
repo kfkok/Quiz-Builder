@@ -53,6 +53,7 @@ namespace QuizBuilder
                     OptionForm optionForm = Instantiate(optionFormPrefab);
                     optionForm.Load(i + 1, question.options[i]);
                     optionForm.transform.SetParent(optionFormsContainer);
+                    optionForm.transform.localScale = Vector3.one;
                     optionForms.Add(optionForm);
                 }
             } 
@@ -77,6 +78,7 @@ namespace QuizBuilder
                     OptionForm optionForm = Instantiate(optionFormPrefab);
                     optionForm.Load(i + 1, option);
                     optionForm.transform.SetParent(optionFormsContainer);
+                    optionForm.transform.localScale = Vector3.one;
                     optionForms.Add(optionForm);
                 }
             }

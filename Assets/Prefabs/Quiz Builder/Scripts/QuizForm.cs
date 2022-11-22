@@ -121,6 +121,7 @@ namespace QuizBuilder
                 QuestionView questionView = Instantiate(questionViewPrefab);
                 questionView.LoadQuestion(i + 1, quiz.questions[i]);
                 questionView.transform.SetParent(questionViewContainer);
+                questionView.transform.localScale = Vector3.one;
                 questionView.OnClick += (questionView) => 
                 {
                     ShowQuestionForm(questionView.question);

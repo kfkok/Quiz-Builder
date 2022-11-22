@@ -136,6 +136,7 @@ namespace QuizBuilder
                 };
 
                 quizView.transform.SetParent(quizViewsContainer);
+                quizView.transform.localScale = Vector3.one;
             }
         }
 

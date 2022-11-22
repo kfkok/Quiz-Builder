@@ -80,6 +80,7 @@ namespace QuizBuilder
                 OptionPreviewView optionPreviewView = Instantiate(optionPreviewViewPrefab);
                 optionPreviewView.Load(currentQuestion.options[i]);
                 optionPreviewView.transform.SetParent(optionPreviewViewContainer);
+                optionPreviewView.transform.localScale = Vector3.one;
             }
 
             StartCoroutine(RefreshOptionsLayout());
